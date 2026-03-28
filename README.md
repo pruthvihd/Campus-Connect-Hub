@@ -29,7 +29,7 @@ A modern web platform designed to connect students, share resources, and collabo
 ```
 Campus-Connect-Hub-2k26/
 │── client/        # React frontend
-│── server/        # Backend (Node.js + Express)
+│── server/        # Backend (Spring boot)
 │── package.json
 │── README.md
 ```
