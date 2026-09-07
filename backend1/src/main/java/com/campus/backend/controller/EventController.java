@@ -1,10 +1,13 @@
 package com.campus.backend.controller;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.campus.backend.model.AdminActivity;
@@ -14,7 +17,6 @@ import com.campus.backend.repository.EventRegistrationRepository;
 
 @RestController
 @RequestMapping("/events")
-@CrossOrigin("*")
 public class EventController {
 
     @Autowired
@@ -28,6 +30,9 @@ public class EventController {
     //--------------------------------------
 
     private Date convertToISTEndOfDay(Date inputDate) {
+        if (inputDate == null) {
+            return null;
+        }
 
         ZoneId indiaZone = ZoneId.of("Asia/Kolkata");
 
@@ -48,9 +53,11 @@ public class EventController {
     //--------------------------------------
 
     @PostMapping("/register")
-    public EventRegistration registerEvent(@RequestBody EventRegistration event) {
+    public ResponseEntity<EventRegistration> registerEvent(@RequestBody EventRegistration event) {
 
-        event.setExpireAt(convertToISTEndOfDay(event.getExpireAt()));
+        if (event.getExpireAt() != null) {
+            event.setExpireAt(convertToISTEndOfDay(event.getExpireAt()));
+        }
 
         EventRegistration savedEvent = repo.save(event);
 
@@ -58,12 +65,12 @@ public class EventController {
         AdminActivity activity = new AdminActivity();
         activity.setAdminName("Admin");
         activity.setAction("Created Event");
-        activity.setTarget(savedEvent.getTitle());
+        activity.setTarget(savedEvent.getTitle() != null ? savedEvent.getTitle() : savedEvent.getId());
         activity.setTimestamp(new Date());
 
         activityRepo.save(activity);
 
-        return savedEvent;
+        return ResponseEntity.ok(savedEvent);
     }
 
     //--------------------------------------
@@ -71,27 +78,29 @@ public class EventController {
     //--------------------------------------
 
     @PutMapping("/update/{id}")
-    public EventRegistration updateEvent(
+    public ResponseEntity<EventRegistration> updateEvent(
             @PathVariable String id,
             @RequestBody EventRegistration updatedEvent) {
 
         updatedEvent.setId(id);
 
-        updatedEvent.setExpireAt(
-                convertToISTEndOfDay(updatedEvent.getExpireAt())
-        );
+        if (updatedEvent.getExpireAt() != null) {
+            updatedEvent.setExpireAt(
+                    convertToISTEndOfDay(updatedEvent.getExpireAt())
+            );
+        }
 
         EventRegistration saved = repo.save(updatedEvent);
 
         AdminActivity activity = new AdminActivity();
         activity.setAdminName("Admin");
         activity.setAction("Updated Event");
-        activity.setTarget(saved.getTitle());
+        activity.setTarget(saved.getTitle() != null ? saved.getTitle() : saved.getId());
         activity.setTimestamp(new Date());
 
         activityRepo.save(activity);
 
-        return saved;
+        return ResponseEntity.ok(saved);
     }
 
     //--------------------------------------
@@ -99,7 +108,7 @@ public class EventController {
     //--------------------------------------
 
     @DeleteMapping("/{id}")
-    public String deleteEvent(@PathVariable String id) {
+    public ResponseEntity<String> deleteEvent(@PathVariable String id) {
 
         EventRegistration event = repo.findById(id).orElse(null);
 
@@ -110,22 +119,34 @@ public class EventController {
             AdminActivity activity = new AdminActivity();
             activity.setAdminName("Admin");
             activity.setAction("Deleted Event");
-            activity.setTarget(event.getTitle());
+            activity.setTarget(event.getTitle() != null ? event.getTitle() : event.getId());
             activity.setTimestamp(new Date());
 
             activityRepo.save(activity);
+            return ResponseEntity.ok("Event deleted successfully!");
         }
 
-        return "Event deleted successfully!";
+        return ResponseEntity.status(404).body("Event not found!");
     }
 
     //--------------------------------------
-    // ✅ GET ALL EVENTS (🔥 IMPORTANT)
+    // ✅ GET ALL EVENTS (Both /events and /events/all)
     //--------------------------------------
 
-    @GetMapping("/all")
+    @GetMapping({"", "/all"})
     public List<EventRegistration> getAllEvents() {
-        return repo.findAll(); // ✅ FIX
+        return repo.findAll();
+    }
+
+    //--------------------------------------
+    // ✅ GET EVENT BY ID
+    //--------------------------------------
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EventRegistration> getEventById(@PathVariable String id) {
+        return repo.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     //--------------------------------------

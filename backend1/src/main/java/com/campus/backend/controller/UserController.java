@@ -1,7 +1,9 @@
 package com.campus.backend.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +15,6 @@ import com.campus.backend.repository.UserRepository;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin("*")
 public class UserController {
 
     @Autowired
@@ -21,20 +22,23 @@ public class UserController {
 
     // ✅ REGISTER USER
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user){
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
 
         User existingUser = repo.findByEmail(user.getEmail());
 
-        if(existingUser != null){
-            throw new RuntimeException("Email already registered!");
+        if (existingUser != null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Email already registered!");
         }
 
-        return repo.save(user);
+        User savedUser = repo.save(user);
+        return ResponseEntity.ok(savedUser);
     }
 
     // ✅ GET ALL USERS (for testing)
     @GetMapping("/all")
-    public java.util.List<User> getUsers(){
+    public List<User> getUsers() {
         return repo.findAll();
     }
 }
