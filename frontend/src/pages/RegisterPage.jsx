@@ -95,7 +95,7 @@ export default function RegisterPage() {
     try {
 
       await axios.post(
-        "http://localhost:8080/users/register",
+        "http://localhost:8080/api/auth/register",
         {
           name: form.name,
           email: form.email,
@@ -143,8 +143,11 @@ export default function RegisterPage() {
 
     } catch (err) {
 
+      console.error("Registration error:", err);
+
       const msg =
         err.response?.data?.message ||
+        err.response?.data ||
         "Registration failed. Please try again.";
 
       showAlert(msg, "error");
