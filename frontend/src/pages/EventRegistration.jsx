@@ -12,7 +12,8 @@ import {
   MenuItem,
   Alert,
   Snackbar,
-  CardMedia
+  CardMedia,
+  IconButton
 } from "@mui/material";
 
 import {
@@ -26,7 +27,8 @@ import {
   Psychology,
   EmojiEvents,
   Close,
-  CloudUpload
+  CloudUpload,
+  AutoAwesome
 } from "@mui/icons-material";
 
 /* =======================================================
@@ -92,15 +94,15 @@ const EventRegistration = ({ editingEvent }) => {
      EVENT CATEGORIES
   ======================================================= */
   const eventCategories = [
-    { value: "hackathon", label: "Hackathon", icon: <Code /> },
-    { value: "internship", label: "Internship", icon: <Work /> },
-    { value: "webinars", label: "Webinars", icon: <VideoCall /> },
-    { value: "workshop", label: "Workshop", icon: <School /> },
-    { value: "cultural", label: "Cultural Events", icon: <TheaterComedy /> },
-    { value: "sports", label: "Sports", icon: <SportsBaseball /> },
-    { value: "offcampus", label: "Off Campus Hiring", icon: <BusinessCenter /> },
-    { value: "mentorship", label: "Mentorship", icon: <Psychology /> },
-    { value: "competition", label: "Other Competitions", icon: <EmojiEvents /> }
+    { value: "hackathon", label: "Hackathon", icon: <Code sx={{ color: "#6366F1" }} /> },
+    { value: "internship", label: "Internship", icon: <Work sx={{ color: "#06B6D4" }} /> },
+    { value: "webinars", label: "Webinars", icon: <VideoCall sx={{ color: "#3B82F6" }} /> },
+    { value: "workshop", label: "Workshop", icon: <School sx={{ color: "#10B981" }} /> },
+    { value: "cultural", label: "Cultural Events", icon: <TheaterComedy sx={{ color: "#EC4899" }} /> },
+    { value: "sports", label: "Sports", icon: <SportsBaseball sx={{ color: "#F59E0B" }} /> },
+    { value: "offcampus", label: "Off Campus Hiring", icon: <BusinessCenter sx={{ color: "#8B5CF6" }} /> },
+    { value: "mentorship", label: "Mentorship", icon: <Psychology sx={{ color: "#14B8A6" }} /> },
+    { value: "competition", label: "Other Competitions", icon: <EmojiEvents sx={{ color: "#F43F5E" }} /> }
   ];
 
   /* =======================================================
@@ -186,55 +188,121 @@ const EventRegistration = ({ editingEvent }) => {
     }
   };
 
+  const inputStyle = {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    "& .MuiInputLabel-root": {
+      color: "#94A3B8",
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontWeight: 500,
+      "&.Mui-focused": { color: "#818CF8" }
+    },
+    "& .MuiOutlinedInput-root": {
+      color: "#FFFFFF",
+      backgroundColor: "rgba(255, 255, 255, 0.04)",
+      borderRadius: 3,
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      "& fieldset": { borderColor: "rgba(255, 255, 255, 0.15)" },
+      "&:hover fieldset": { borderColor: "rgba(99, 102, 241, 0.5)" },
+      "&.Mui-focused fieldset": { borderColor: "#6366F1" }
+    },
+    "& .MuiSelect-icon": { color: "#94A3B8" }
+  };
+
   /* =======================================================
      UI
   ======================================================= */
   return (
-    <Box sx={{ maxHeight: "80vh", overflow: "auto" }}>
-
+    <Box
+      sx={{
+        maxHeight: "90vh",
+        overflow: "auto",
+        backgroundColor: "#0F172A",
+        color: "#FFFFFF",
+        fontFamily: "'Plus Jakarta Sans', sans-serif"
+      }}
+    >
       {/* HEADER */}
       <Box
         sx={{
-          background: "#667eea",
-          p: 3,
-          color: "white",
-          position: "relative"
+          background: "linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #312E81 100%)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          p: { xs: 3, md: 3.5 },
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between"
         }}
       >
-        <Typography variant="h4" align="center" fontWeight="700">
-          {editingEvent ? "Edit Event" : "Register New Event"}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <AutoAwesome sx={{ color: "#818CF8", fontSize: 28 }} />
+          <Typography
+            variant="h5"
+            sx={{
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontWeight: 800,
+              fontSize: { xs: "1.3rem", md: "1.75rem" },
+              background: "linear-gradient(135deg, #FFFFFF 30%, #A5B4FC 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              letterSpacing: "-0.02em"
+            }}
+          >
+            {editingEvent ? "Edit Event" : "Register New Event"}
+          </Typography>
+        </Box>
 
-        {/* ❌ CLOSE BUTTON FIXED */}
-        <Button
+        <IconButton
           onClick={() => navigate("/menu")}
           sx={{
-            position: "absolute",
-            right: 16,
-            top: 16,
-            color: "white",
-            minWidth: "auto"
+            color: "#FFFFFF",
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.2)"
+            }
           }}
         >
           <Close />
-        </Button>
+        </IconButton>
       </Box>
 
-      {/* FORM */}
-      <Box sx={{ p: 4 }}>
+      {/* FORM BODY */}
+      <Box sx={{ p: { xs: 3, md: 4 } }}>
         <Grid container spacing={4}>
 
           {/* IMAGE UPLOAD */}
-          <Grid item xs={12} md={6}>
-            <Card
+          <Grid item xs={12} md={5}>
+            <Typography
               sx={{
-                height: 300,
-                borderRadius: 2,
-                border: "2px dashed #bbb",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.9rem",
+                color: "#E2E8F0",
+                mb: 1.5
+              }}
+            >
+              Event Cover Banner
+            </Typography>
+
+            <Card
+              elevation={0}
+              sx={{
+                height: 340,
+                borderRadius: 4,
+                border: "2px dashed rgba(99, 102, 241, 0.4)",
+                backgroundColor: "rgba(255, 255, 255, 0.03)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                cursor: "pointer"
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                overflow: "hidden",
+                "&:hover": {
+                  borderColor: "#6366F1",
+                  backgroundColor: "rgba(99, 102, 241, 0.06)",
+                  transform: "scale(1.01)"
+                }
               }}
               onClick={() =>
                 document.getElementById("upload-img").click()
@@ -259,59 +327,193 @@ const EventRegistration = ({ editingEvent }) => {
                   }}
                 />
               ) : (
-                <Box sx={{ textAlign: "center" }}>
-                  <CloudUpload sx={{ fontSize: 55, color: "#888" }} />
-                  <Typography>Upload Event Image</Typography>
+                <Box sx={{ textAlign: "center", p: 3 }}>
+                  <Box
+                    sx={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: "50%",
+                      backgroundColor: "rgba(99, 102, 241, 0.15)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mx: "auto",
+                      mb: 2
+                    }}
+                  >
+                    <CloudUpload sx={{ fontSize: 32, color: "#818CF8" }} />
+                  </Box>
+                  <Typography
+                    sx={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontWeight: 700,
+                      color: "#FFFFFF",
+                      fontSize: "1rem",
+                      mb: 0.5
+                    }}
+                  >
+                    Upload Cover Image
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontSize: "0.825rem",
+                      color: "#94A3B8"
+                    }}
+                  >
+                    PNG, JPG or WEBP (Max 5MB)
+                  </Typography>
                 </Box>
               )}
             </Card>
           </Grid>
 
           {/* FORM FIELDS */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={7}>
             <form onSubmit={handleSubmit}>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
 
-                <TextField label="Event Name *" name="title" value={form.title} onChange={handleChange} required />
+                <TextField
+                  label="Event Name *"
+                  name="title"
+                  value={form.title}
+                  onChange={handleChange}
+                  required
+                  sx={inputStyle}
+                />
 
-                <TextField select label="Category *" name="category" value={form.category} onChange={handleChange} required>
+                <TextField
+                  select
+                  label="Category *"
+                  name="category"
+                  value={form.category}
+                  onChange={handleChange}
+                  required
+                  sx={inputStyle}
+                >
                   {eventCategories.map(cat => (
-                    <MenuItem key={cat.value} value={cat.value}>
-                      {cat.label}
+                    <MenuItem
+                      key={cat.value}
+                      value={cat.value}
+                      sx={{
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        fontWeight: 600,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                        py: 1.2
+                      }}
+                    >
+                      {cat.icon}
+                      <span>{cat.label}</span>
                     </MenuItem>
                   ))}
                 </TextField>
 
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      label="Event Date *"
+                      name="date"
+                      value={form.date}
+                      onChange={handleChange}
+                      InputLabelProps={{ shrink: true }}
+                      required
+                      sx={inputStyle}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Fee (₹)"
+                      name="fee"
+                      value={form.fee}
+                      onChange={handleChange}
+                      placeholder="Leave empty for Free"
+                      sx={inputStyle}
+                    />
+                  </Grid>
+                </Grid>
+
                 <TextField
-                  type="date"
-                  label="Event Date *"
-                  name="date"
-                  value={form.date}
+                  label="Venue"
+                  name="venue"
+                  value={form.venue}
                   onChange={handleChange}
-                  InputLabelProps={{ shrink: true }}
-                  required
+                  sx={inputStyle}
                 />
 
-                <TextField label="Venue" name="venue" value={form.venue} onChange={handleChange} />
-                <TextField label="Organizer Name" name="organizerName" value={form.organizerName} onChange={handleChange} />
-                <TextField label="Organizer Phone *" name="organizerPhone" value={form.organizerPhone} onChange={handleChange} required />
-                <TextField label="Registration Link *" name="registrationLink" value={form.registrationLink} onChange={handleChange} required />
-                <TextField label="Description" name="description" value={form.description} onChange={handleChange} multiline rows={3} />
-                <TextField label="Fee" name="fee" value={form.fee} onChange={handleChange} placeholder="Leave empty for Free" />
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Organizer Name"
+                      name="organizerName"
+                      value={form.organizerName}
+                      onChange={handleChange}
+                      sx={inputStyle}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Organizer Phone *"
+                      name="organizerPhone"
+                      value={form.organizerPhone}
+                      onChange={handleChange}
+                      required
+                      sx={inputStyle}
+                    />
+                  </Grid>
+                </Grid>
+
+                <TextField
+                  label="Registration Link *"
+                  name="registrationLink"
+                  value={form.registrationLink}
+                  onChange={handleChange}
+                  required
+                  sx={inputStyle}
+                />
+
+                <TextField
+                  label="Description"
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  multiline
+                  rows={3}
+                  sx={inputStyle}
+                />
 
                 <Button
                   type="submit"
                   variant="contained"
                   disabled={loading}
                   sx={{
-                    py: 1.3,
-                    fontWeight: "600",
-                    background: "#667eea",
-                    "&:hover": { background: "#5a6fd8" }
+                    py: 1.6,
+                    borderRadius: 3,
+                    background: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)",
+                    boxShadow: "0 8px 20px -4px rgba(99, 102, 241, 0.5)",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                    textTransform: "none",
+                    letterSpacing: "0.01em",
+                    color: "#FFFFFF",
+                    mt: 1,
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #4338CA 0%, #6D28D9 100%)",
+                      boxShadow: "0 12px 25px -4px rgba(99, 102, 241, 0.7)",
+                      transform: "translateY(-2px)"
+                    }
                   }}
                 >
                   {loading
-                    ? (editingEvent ? "Updating..." : "Registering...")
+                    ? (editingEvent ? "Updating Event..." : "Registering Event...")
                     : (editingEvent ? "Save Changes" : "Register Event")}
                 </Button>
 
@@ -328,7 +530,7 @@ const EventRegistration = ({ editingEvent }) => {
         autoHideDuration={3000}
         onClose={() => setAlert({ ...alert, open: false })}
       >
-        <Alert severity={alert.severity}>
+        <Alert severity={alert.severity} sx={{ borderRadius: 3, fontWeight: 600 }}>
           {alert.message}
         </Alert>
       </Snackbar>
@@ -337,4 +539,4 @@ const EventRegistration = ({ editingEvent }) => {
   );
 };
 
-export default EventRegistration;
+export default EventRegistration;

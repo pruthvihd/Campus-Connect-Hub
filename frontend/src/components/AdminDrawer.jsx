@@ -12,12 +12,14 @@ import {
   ListItemIcon,
   ListItemText,
   Card,
-  CardContent,
   Button,
   Dialog,
   Menu,
   MenuItem,
-  IconButton
+  IconButton,
+  Chip,
+  Stack,
+  Grid
 } from "@mui/material";
 
 import {
@@ -27,7 +29,9 @@ import {
   History,
   Delete,
   PhotoCamera,
-  Close   // ✅ added
+  Close,
+  AutoAwesome,
+  EventNote
 } from "@mui/icons-material";
 
 import EventRegistration from "../pages/EventRegistration";
@@ -51,7 +55,6 @@ export default function AdminDrawer({ open, onClose }) {
   const fetchEvents = async () => {
     try {
       const res = await axios.get("http://localhost:8080/events/all");
-      console.log("Events 👉", res.data);
       setEvents(res.data || []);
     } catch (err) {
       console.log("Fetch error:", err);
@@ -84,7 +87,7 @@ export default function AdminDrawer({ open, onClose }) {
   if (!user) return null;
 
   const initials =
-    user?.name?.charAt(0)?.toUpperCase() || "U";
+    user?.name?.charAt(0)?.toUpperCase() || "A";
 
   //------------------------------------
   // PROFILE PIC
@@ -117,8 +120,10 @@ export default function AdminDrawer({ open, onClose }) {
   };
 
   const openDevice = () => {
-    fileInputRef.current.removeAttribute("capture");
-    fileInputRef.current.click();
+    if (fileInputRef.current) {
+      fileInputRef.current.removeAttribute("capture");
+      fileInputRef.current.click();
+    }
   };
 
   //------------------------------------
@@ -171,13 +176,36 @@ export default function AdminDrawer({ open, onClose }) {
 
   return (
     <>
-      <Drawer anchor="right" open={open} onClose={onClose}>
-        <Box sx={{ width: 900, display: "flex" }}>
+      <Drawer
+        anchor="right"
+        open={open}
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            backgroundColor: "rgba(11, 15, 25, 0.94)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            color: "#FFFFFF",
+            fontFamily: "'Plus Jakarta Sans', sans-serif"
+          }
+        }}
+      >
+        <Box sx={{ width: { xs: "100vw", sm: 820, md: 940 }, display: "flex", minHeight: "100vh" }}>
 
-          {/* LEFT PANEL */}
-          <Box sx={{ width: 320, p: 3 }}>
+          {/* LEFT SIDEBAR PANEL */}
+          <Box
+            sx={{
+              width: 320,
+              p: 3,
+              background: "rgba(15, 23, 42, 0.65)",
+              backdropFilter: "blur(20px)",
+              borderRight: "1px solid rgba(255, 255, 255, 0.15)",
+              display: "flex",
+              flexDirection: "column"
+            }}
+          >
 
-            <Box textAlign="center">
+            {/* PROFILE SECTION */}
+            <Box textAlign="center" pt={1}>
 
               <Box sx={{ position: "relative", width: 100, margin: "auto" }}>
                 <Avatar
@@ -185,8 +213,13 @@ export default function AdminDrawer({ open, onClose }) {
                   sx={{
                     width: 100,
                     height: 100,
-                    bgcolor: "#667eea",
-                    fontSize: 36
+                    bgcolor: "transparent",
+                    background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
+                    color: "#FFFFFF",
+                    fontSize: 38,
+                    fontWeight: 800,
+                    boxShadow: "0 0 24px rgba(99, 102, 241, 0.5)",
+                    border: "2.5px solid rgba(255, 255, 255, 0.9)"
                   }}
                 >
                   {!user.profilePic && initials}
@@ -197,83 +230,261 @@ export default function AdminDrawer({ open, onClose }) {
                   onClick={(e) => setAnchorEl(e.currentTarget)}
                   sx={{
                     position: "absolute",
-                    bottom: 0,
-                    right: 0,
-                    bgcolor: "white",
-                    boxShadow: 2
+                    bottom: 2,
+                    right: 2,
+                    bgcolor: "#6366F1",
+                    color: "#FFFFFF",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                    border: "2px solid #0F172A",
+                    "&:hover": { bgcolor: "#4F46E5" }
                   }}
                 >
-                  <PhotoCamera fontSize="small" />
+                  <PhotoCamera sx={{ fontSize: 16 }} />
                 </IconButton>
               </Box>
 
-              <Typography variant="h6" fontWeight="bold" mt={1}>
-                {user?.name || "User"}
+              <Typography
+                sx={{
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 800,
+                  fontSize: "1.25rem",
+                  color: "#FFFFFF",
+                  mt: 2
+                }}
+              >
+                {user?.name || "Admin"}
               </Typography>
 
-              <Typography variant="body2" mt={1}>
-                📧 {user.email}
-              </Typography>
+              <Stack spacing={0.6} mt={1.5} alignItems="center">
+                {user.email && (
+                  <Typography sx={{ fontSize: "0.825rem", color: "#CBD5E1", fontWeight: 500 }}>
+                    📧 {user.email}
+                  </Typography>
+                )}
 
-              <Typography variant="body2">
-                📞 {user.phone}
-              </Typography>
+                {user.phone && (
+                  <Typography sx={{ fontSize: "0.825rem", color: "#CBD5E1", fontWeight: 500 }}>
+                    📞 {user.phone}
+                  </Typography>
+                )}
 
-              <Typography variant="body2">
-                🎓 {user.college}
-              </Typography>
+                {user.college && (
+                  <Typography sx={{ fontSize: "0.825rem", color: "#CBD5E1", fontWeight: 500 }}>
+                    🎓 {user.college}
+                  </Typography>
+                )}
+              </Stack>
 
             </Box>
 
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 3, borderColor: "rgba(255, 255, 255, 0.15)" }} />
 
-            <List>
+            {/* NAV MENU LIST */}
+            <Typography
+              sx={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontWeight: 800,
+                fontSize: "0.75rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "#94A3B8",
+                mb: 1.5,
+                px: 1
+              }}
+            >
+              Admin Controls
+            </Typography>
 
-              <ListItemButton onClick={() => setActiveSection("dashboard")}>
-                <ListItemIcon><EventIcon /></ListItemIcon>
-                <ListItemText primary="Events Dashboard" />
-              </ListItemButton>
+            <List sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
 
-              <ListItemButton onClick={() => setActiveSection("edit")}>
-                <ListItemIcon><Edit /></ListItemIcon>
-                <ListItemText primary="Edit Events" />
-              </ListItemButton>
-
-              <ListItemButton onClick={() => setActiveSection("delete")}>
-                <ListItemIcon><Delete /></ListItemIcon>
-                <ListItemText primary="Delete Events" />
-              </ListItemButton>
-
-              <ListItemButton onClick={() => setActiveSection("history")}>
-                <ListItemIcon><History /></ListItemIcon>
-                <ListItemText primary="Expired Events" />
-              </ListItemButton>
-
-              <Divider sx={{ my: 1 }} />
-
-              <ListItemButton onClick={() => {
-                localStorage.removeItem("user");
-                window.location.href = "/login";
-              }}>
-                <ListItemIcon>
-                  <Logout color="error" />
+              <ListItemButton
+                onClick={() => setActiveSection("dashboard")}
+                sx={{
+                  borderRadius: 3,
+                  py: 1.2,
+                  px: 2,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  background: activeSection === "dashboard"
+                    ? "linear-gradient(135deg, rgba(99, 102, 241, 0.45) 0%, rgba(139, 92, 246, 0.35) 100%)"
+                    : "transparent",
+                  border: activeSection === "dashboard"
+                    ? "1px solid rgba(255, 255, 255, 0.3)"
+                    : "1px solid transparent",
+                  "&:hover": { background: "rgba(255, 255, 255, 0.12)" }
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 38, color: activeSection === "dashboard" ? "#818CF8" : "#94A3B8" }}>
+                  <EventIcon />
                 </ListItemIcon>
-                <ListItemText primary="Logout" />
+                <ListItemText
+                  primary="Active Events"
+                  primaryTypographyProps={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: activeSection === "dashboard" ? 700 : 600,
+                    fontSize: "0.925rem",
+                    color: "#FFFFFF"
+                  }}
+                />
+                <Chip
+                  label={activeEvents.length}
+                  size="small"
+                  sx={{
+                    height: 22,
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    background: "rgba(99, 102, 241, 0.3)",
+                    color: "#E0E7FF"
+                  }}
+                />
+              </ListItemButton>
+
+              <ListItemButton
+                onClick={() => setActiveSection("edit")}
+                sx={{
+                  borderRadius: 3,
+                  py: 1.2,
+                  px: 2,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  background: activeSection === "edit"
+                    ? "linear-gradient(135deg, rgba(99, 102, 241, 0.45) 0%, rgba(139, 92, 246, 0.35) 100%)"
+                    : "transparent",
+                  border: activeSection === "edit"
+                    ? "1px solid rgba(255, 255, 255, 0.3)"
+                    : "1px solid transparent",
+                  "&:hover": { background: "rgba(255, 255, 255, 0.12)" }
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 38, color: activeSection === "edit" ? "#38BDF8" : "#94A3B8" }}>
+                  <Edit />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Edit Events"
+                  primaryTypographyProps={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: activeSection === "edit" ? 700 : 600,
+                    fontSize: "0.925rem",
+                    color: "#FFFFFF"
+                  }}
+                />
+              </ListItemButton>
+
+              <ListItemButton
+                onClick={() => setActiveSection("delete")}
+                sx={{
+                  borderRadius: 3,
+                  py: 1.2,
+                  px: 2,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  background: activeSection === "delete"
+                    ? "linear-gradient(135deg, rgba(239, 68, 68, 0.4) 0%, rgba(220, 38, 38, 0.3) 100%)"
+                    : "transparent",
+                  border: activeSection === "delete"
+                    ? "1px solid rgba(239, 68, 68, 0.4)"
+                    : "1px solid transparent",
+                  "&:hover": { background: "rgba(239, 68, 68, 0.15)" }
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 38, color: activeSection === "delete" ? "#F87171" : "#94A3B8" }}>
+                  <Delete />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Delete Events"
+                  primaryTypographyProps={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: activeSection === "delete" ? 700 : 600,
+                    fontSize: "0.925rem",
+                    color: "#FFFFFF"
+                  }}
+                />
+              </ListItemButton>
+
+              <ListItemButton
+                onClick={() => setActiveSection("history")}
+                sx={{
+                  borderRadius: 3,
+                  py: 1.2,
+                  px: 2,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  background: activeSection === "history"
+                    ? "linear-gradient(135deg, rgba(99, 102, 241, 0.45) 0%, rgba(139, 92, 246, 0.35) 100%)"
+                    : "transparent",
+                  border: activeSection === "history"
+                    ? "1px solid rgba(255, 255, 255, 0.3)"
+                    : "1px solid transparent",
+                  "&:hover": { background: "rgba(255, 255, 255, 0.12)" }
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 38, color: activeSection === "history" ? "#A78BFA" : "#94A3B8" }}>
+                  <History />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Expired Events"
+                  primaryTypographyProps={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: activeSection === "history" ? 700 : 600,
+                    fontSize: "0.925rem",
+                    color: "#FFFFFF"
+                  }}
+                />
+                <Chip
+                  label={expiredEvents.length}
+                  size="small"
+                  sx={{
+                    height: 22,
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    background: "rgba(255, 255, 255, 0.15)",
+                    color: "#CBD5E1"
+                  }}
+                />
+              </ListItemButton>
+
+              <Divider sx={{ my: 1.5, borderColor: "rgba(255, 255, 255, 0.15)" }} />
+
+              <ListItemButton
+                onClick={() => {
+                  localStorage.removeItem("user");
+                  window.location.href = "/#/login";
+                }}
+                sx={{
+                  borderRadius: 3,
+                  py: 1.2,
+                  px: 2,
+                  "&:hover": { background: "rgba(239, 68, 68, 0.15)" }
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 38 }}>
+                  <Logout sx={{ color: "#F87171" }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Logout"
+                  primaryTypographyProps={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "0.925rem",
+                    color: "#F87171"
+                  }}
+                />
               </ListItemButton>
 
             </List>
           </Box>
 
-          {/* RIGHT PANEL */}
-          <Box sx={{ flex: 1, p: 3, overflowY: "auto", position: "relative" }}>
+          {/* RIGHT PANEL CONTENT */}
+          <Box sx={{ flex: 1, p: { xs: 3, md: 4 }, overflowY: "auto", position: "relative" }}>
 
-            {/* ❌ CLOSE BUTTON */}
+            {/* CLOSE BUTTON */}
             <IconButton
               onClick={onClose}
               sx={{
                 position: "absolute",
-                top: 10,
-                right: 10
+                top: 20,
+                right: 20,
+                color: "#FFFFFF",
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255, 255, 255, 0.18)",
+                "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.25)" }
               }}
             >
               <Close />
@@ -281,97 +492,309 @@ export default function AdminDrawer({ open, onClose }) {
 
             {/* DASHBOARD */}
             {activeSection === "dashboard" && (
-              <>
-                <Typography variant="h5" mb={2}>Active Events</Typography>
+              <Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3.5 }}>
+                  <AutoAwesome sx={{ color: "#818CF8", fontSize: 28 }} />
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontWeight: 800,
+                      fontSize: "1.75rem",
+                      color: "#FFFFFF"
+                    }}
+                  >
+                    Active Events Dashboard
+                  </Typography>
+                </Box>
 
                 {activeEvents.length === 0 ? (
-                  <Typography>No Active Events</Typography>
+                  <Card
+                    elevation={0}
+                    sx={{
+                      p: 5,
+                      textAlign: "center",
+                      borderRadius: 4,
+                      background: "rgba(15, 23, 42, 0.55)",
+                      backdropFilter: "blur(20px)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)"
+                    }}
+                  >
+                    <EventNote sx={{ fontSize: 52, color: "#818CF8", mb: 1.5 }} />
+                    <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: "1.1rem" }}>
+                      No Active Events Currently
+                    </Typography>
+                  </Card>
                 ) : (
-                  activeEvents.map(event => (
-                    <Card key={event.id || event._id} sx={{ mb: 2 }}>
-                      <CardContent>
-                        <Typography fontWeight="bold">
+                  <Grid container spacing={2.5}>
+                    {activeEvents.map(event => (
+                      <Grid item xs={12} sm={6} key={event.id || event._id}>
+                        <Card
+                          elevation={0}
+                          sx={{
+                            height: "100%",
+                            borderRadius: 4,
+                            background: "rgba(15, 23, 42, 0.55)",
+                            backdropFilter: "blur(24px) saturate(180%)",
+                            border: "1px solid rgba(255, 255, 255, 0.22)",
+                            boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.35)",
+                            p: 2.5,
+                            display: "flex",
+                            flexDirection: "column"
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              fontFamily: "'Plus Jakarta Sans', sans-serif",
+                              fontWeight: 800,
+                              fontSize: "1.15rem",
+                              color: "#FFFFFF",
+                              mb: 1.5
+                            }}
+                          >
+                            {event.title}
+                          </Typography>
+
+                          <Stack spacing={1} mb={2}>
+                            {event.category && (
+                              <Typography sx={{ fontSize: "0.85rem", color: "#CBD5E1", fontWeight: 600 }}>
+                                🏷️ Category: {event.category}
+                              </Typography>
+                            )}
+                            {event.venue && (
+                              <Typography sx={{ fontSize: "0.85rem", color: "#CBD5E1", fontWeight: 600 }}>
+                                📍 Venue: {event.venue}
+                              </Typography>
+                            )}
+                            {event.expireAt && (
+                              <Typography sx={{ fontSize: "0.85rem", color: "#CBD5E1", fontWeight: 600 }}>
+                                📅 Date: {new Date(event.expireAt).toLocaleDateString()}
+                              </Typography>
+                            )}
+                          </Stack>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+              </Box>
+            )}
+
+            {/* EDIT EVENTS */}
+            {activeSection === "edit" && (
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: 800,
+                    fontSize: "1.75rem",
+                    color: "#FFFFFF",
+                    mb: 3.5
+                  }}
+                >
+                  Edit Registered Events
+                </Typography>
+
+                <Grid container spacing={2.5}>
+                  {activeEvents.map(event => (
+                    <Grid item xs={12} sm={6} key={event.id || event._id}>
+                      <Card
+                        elevation={0}
+                        sx={{
+                          borderRadius: 4,
+                          background: "rgba(15, 23, 42, 0.55)",
+                          backdropFilter: "blur(24px) saturate(180%)",
+                          border: "1px solid rgba(255, 255, 255, 0.22)",
+                          p: 2.5
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            fontWeight: 800,
+                            fontSize: "1.1rem",
+                            color: "#FFFFFF",
+                            mb: 1
+                          }}
+                        >
                           {event.title}
                         </Typography>
-                        <Typography>{event.venue}</Typography>
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
-              </>
+
+                        <Typography sx={{ fontSize: "0.85rem", color: "#CBD5E1", mb: 2 }}>
+                          {event.category} | {event.venue || "Campus"}
+                        </Typography>
+
+                        <Button
+                          variant="contained"
+                          startIcon={<Edit sx={{ fontSize: 18 }} />}
+                          onClick={() => handleEdit(event)}
+                          sx={{
+                            py: 1,
+                            px: 2.5,
+                            borderRadius: 2.5,
+                            background: "linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)",
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            fontWeight: 700,
+                            textTransform: "none",
+                            boxShadow: "0 4px 14px rgba(79, 70, 229, 0.4)"
+                          }}
+                        >
+                          Edit Event Details
+                        </Button>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
             )}
 
-            {/* EDIT */}
-            {activeSection === "edit" && (
-              <>
-                <Typography variant="h5" mb={2}>Edit Events</Typography>
-
-                {activeEvents.map(event => (
-                  <Card key={event.id || event._id} sx={{ mb: 2 }}>
-                    <CardContent>
-                      <Typography fontWeight="bold">
-                        {event.title}
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        sx={{ mt: 1 }}
-                        onClick={() => handleEdit(event)}
-                      >
-                        Edit
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </>
-            )}
-
-            {/* DELETE */}
+            {/* DELETE EVENTS */}
             {activeSection === "delete" && (
-              <>
-                <Typography variant="h5" mb={2}>Delete Events</Typography>
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: 800,
+                    fontSize: "1.75rem",
+                    color: "#FFFFFF",
+                    mb: 3.5
+                  }}
+                >
+                  Delete Active Events
+                </Typography>
 
-                {activeEvents.map(event => (
-                  <Card key={event.id || event._id} sx={{ mb: 2 }}>
-                    <CardContent>
-                      <Typography fontWeight="bold">
-                        {event.title}
-                      </Typography>
-                      <Button
-                        color="error"
-                        variant="contained"
-                        sx={{ mt: 1 }}
-                        onClick={() => deleteEvent(event.id || event._id)}
+                <Grid container spacing={2.5}>
+                  {activeEvents.map(event => (
+                    <Grid item xs={12} sm={6} key={event.id || event._id}>
+                      <Card
+                        elevation={0}
+                        sx={{
+                          borderRadius: 4,
+                          background: "rgba(15, 23, 42, 0.55)",
+                          backdropFilter: "blur(24px) saturate(180%)",
+                          border: "1px solid rgba(239, 68, 68, 0.3)",
+                          p: 2.5
+                        }}
                       >
-                        Delete
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </>
+                        <Typography
+                          sx={{
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            fontWeight: 800,
+                            fontSize: "1.1rem",
+                            color: "#FFFFFF",
+                            mb: 1
+                          }}
+                        >
+                          {event.title}
+                        </Typography>
+
+                        <Typography sx={{ fontSize: "0.85rem", color: "#CBD5E1", mb: 2 }}>
+                          {event.category}
+                        </Typography>
+
+                        <Button
+                          variant="contained"
+                          color="error"
+                          startIcon={<Delete sx={{ fontSize: 18 }} />}
+                          onClick={() => deleteEvent(event.id || event._id)}
+                          sx={{
+                            py: 1,
+                            px: 2.5,
+                            borderRadius: 2.5,
+                            background: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            fontWeight: 700,
+                            textTransform: "none",
+                            boxShadow: "0 4px 14px rgba(239, 68, 68, 0.4)"
+                          }}
+                        >
+                          Delete Event
+                        </Button>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
             )}
 
             {/* HISTORY */}
             {activeSection === "history" && (
-              <>
-                <Typography variant="h5" mb={2}>Expired Events</Typography>
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: 800,
+                    fontSize: "1.75rem",
+                    color: "#FFFFFF",
+                    mb: 3.5
+                  }}
+                >
+                  Expired Events Log
+                </Typography>
 
                 {expiredEvents.length === 0 ? (
-                  <Typography>No Expired Events</Typography>
+                  <Card
+                    elevation={0}
+                    sx={{
+                      p: 5,
+                      textAlign: "center",
+                      borderRadius: 4,
+                      background: "rgba(15, 23, 42, 0.55)",
+                      backdropFilter: "blur(20px)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)"
+                    }}
+                  >
+                    <History sx={{ fontSize: 52, color: "#94A3B8", mb: 1.5 }} />
+                    <Typography sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700 }}>
+                      No Expired Events Found
+                    </Typography>
+                  </Card>
                 ) : (
-                  expiredEvents.map(event => (
-                    <Card key={event.id || event._id} sx={{ mb: 2 }}>
-                      <CardContent>
-                        <Typography fontWeight="bold">
-                          {event.title}
-                        </Typography>
-                        <Typography color="error">
-                          Expired
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  ))
+                  <Grid container spacing={2.5}>
+                    {expiredEvents.map(event => (
+                      <Grid item xs={12} sm={6} key={event.id || event._id}>
+                        <Card
+                          elevation={0}
+                          sx={{
+                            borderRadius: 4,
+                            background: "rgba(15, 23, 42, 0.55)",
+                            backdropFilter: "blur(24px) saturate(180%)",
+                            border: "1px solid rgba(255, 255, 255, 0.18)",
+                            p: 2.5
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              fontFamily: "'Plus Jakarta Sans', sans-serif",
+                              fontWeight: 800,
+                              fontSize: "1.1rem",
+                              color: "#FFFFFF",
+                              mb: 1
+                            }}
+                          >
+                            {event.title}
+                          </Typography>
+
+                          <Chip
+                            label="Expired"
+                            size="small"
+                            sx={{
+                              background: "rgba(239, 68, 68, 0.2)",
+                              border: "1px solid rgba(239, 68, 68, 0.4)",
+                              color: "#F87171",
+                              fontWeight: 700,
+                              fontSize: "0.75rem"
+                            }}
+                          />
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
                 )}
-              </>
+              </Box>
             )}
 
           </Box>
@@ -379,7 +802,15 @@ export default function AdminDrawer({ open, onClose }) {
       </Drawer>
 
       {/* EDIT DIALOG */}
-      <Dialog open={editOpen} onClose={closeEdit} maxWidth="md" fullWidth>
+      <Dialog
+        open={editOpen}
+        onClose={closeEdit}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 4, backgroundColor: "transparent", overflow: "hidden" }
+        }}
+      >
         <EventRegistration
           editingEvent={selectedEvent}
           onClose={closeEdit}
@@ -392,8 +823,24 @@ export default function AdminDrawer({ open, onClose }) {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
+        PaperProps={{
+          sx: {
+            backgroundColor: "#0F172A",
+            color: "#FFFFFF",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            borderRadius: 3
+          }
+        }}
       >
-        <MenuItem onClick={openDevice}>Upload from Device</MenuItem>
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            openDevice();
+          }}
+          sx={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, py: 1.2, px: 2.5 }}
+        >
+          Upload Profile Picture from Device
+        </MenuItem>
       </Menu>
 
       <input
